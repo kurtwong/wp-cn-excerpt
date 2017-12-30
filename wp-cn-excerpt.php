@@ -12,6 +12,7 @@ class AdvancedCNExcerpt
     // Plugin configuration
     public $name;
     public $textDomain;
+    public $hasMore;
     protected $options = array(
         'length'          => 100,
         'no_shortcode'    => 1,
@@ -56,6 +57,7 @@ class AdvancedCNExcerpt
         $this->name       = 'wp-cn-excerpt';
         $this->textDomain = $this->name;
         $this->loadOptions();
+        $this->hasMore = FALSE;
 
         load_plugin_textdomain($this->textDomain, false, dirname(plugin_basename(__FILE__ )) . '/lang');
 
@@ -127,7 +129,10 @@ class AdvancedCNExcerpt
             $this->options['ellipsis']);
 
         // Add the ellipsis or link
-        $this->options['add_link'] && $text = $this->readmore($text, $this->options['read_more_tpl']);
+        if ($this->hasMore) {
+            $this->options['add_link'] && $text = $this->readmore($text, $this->options['read_more_tpl']);
+        }
+
 
         return $text;
     }
@@ -249,6 +254,7 @@ class AdvancedCNExcerpt
                     && $token[0] != '<'
                     && mb_strlen($token, 'UTF-8') > 15) {
                 $out = $token;
+                $this->hasMore = TRUE; 
                 break;
             }
 
@@ -274,6 +280,7 @@ class AdvancedCNExcerpt
                 }
 
                 if ($overLength) {
+                    $this->hasMore = TRUE;
                     break;
                 }
 
